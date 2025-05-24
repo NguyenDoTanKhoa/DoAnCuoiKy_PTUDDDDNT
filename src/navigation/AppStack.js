@@ -181,7 +181,8 @@ const AppStack = ({ route }) => {
           initialParams={{ maquyen }}
         />
       )}
-      <Drawer.Screen
+      {maquyen === 1 && (
+        <Drawer.Screen
         name="ThongKe"
         component={ThongKeScreen}
         options={{
@@ -197,6 +198,8 @@ const AppStack = ({ route }) => {
           },
         }}
       />
+      )}
+      {maquyen === 1 && (
       <Drawer.Screen
         name="HoaDon"
         component={HoaDonScreen}
@@ -213,6 +216,8 @@ const AppStack = ({ route }) => {
           },
         }}
       />
+      )}
+      {maquyen === 1 && (
       <Drawer.Screen
         name="DanhGia"
         component={DanhGiaScreen}
@@ -230,6 +235,7 @@ const AppStack = ({ route }) => {
         }}
         initialParams={{ maquyen }} // Thêm dòng này để truyền maquyen xuống
       />
+      )}
     </Drawer.Navigator>
   );
 };
