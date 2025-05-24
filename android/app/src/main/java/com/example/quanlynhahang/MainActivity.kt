@@ -1,4 +1,4 @@
-package com.quanlynhahang
+package com.example.quanlynhahang
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

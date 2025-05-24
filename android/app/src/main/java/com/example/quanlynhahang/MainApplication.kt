@@ -1,4 +1,4 @@
-package com.quanlynhahang
+package com.example.quanlynhahang
 
 import android.app.Application
 import com.facebook.react.PackageList

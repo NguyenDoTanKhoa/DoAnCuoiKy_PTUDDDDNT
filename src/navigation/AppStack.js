@@ -2,6 +2,7 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { FAB } from 'react-native-paper';
 
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -19,7 +20,8 @@ import CustomDrawer from '../components/CustomDrawer';
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabHome = () => {
+const TabHome = ({ route }) => {
+  const { userData } = route.params || {};
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -36,16 +38,18 @@ const TabHome = () => {
       })}
     >
       <Tab.Screen name="Trang chủ" component={HomeScreen} />
-      <Tab.Screen name="Thông tin cá nhân" component={ProfileScreen} />
+      <Tab.Screen name="Thông tin cá nhân" component={ProfileScreen} initialParams={{ userData }} />
       <Tab.Screen name="Thông báo đặt bàn" component={ReservationsScreen} />
     </Tab.Navigator>
   );
 };
 
-const AppStack = () => {
+const AppStack = ({ route }) => {
+  const { userData } = route.params || {};
+  const maquyen = route?.params?.userData?.maquyen;
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawer {...props} />}
+      drawerContent={(props) => <CustomDrawer {...props} userData={userData} />}
       screenOptions={{
         drawerActiveBackgroundColor: '#FFA500',
         drawerActiveTintColor: 'red',
@@ -59,12 +63,16 @@ const AppStack = () => {
             borderTopRightRadius: 0,
             borderBottomRightRadius: 0,
           },
+          headerStyle: { backgroundColor: '#FFA500' }, // Màu nền header
+    headerTitleStyle: { color: 'white' },         // Màu chữ tiêu đề
+    headerTintColor: 'white',                     // Màu icon (menu, back, ...)    
       }}
     >
       {/* Tab Home gồm: Trang chủ, Thông tin, Đặt bàn */}
       <Drawer.Screen
         name="MainTabs"
         component={TabHome}
+        initialParams={{ userData }}
         options={{
             drawerLabel: () => null, // Không hiển thị trong drawer
             title: 'Trang chính',
@@ -78,67 +86,101 @@ const AppStack = () => {
       <Drawer.Screen
         name="LoaiMon"
         component={LoaiMonScreen}
-        options={{
+        options={({ navigation }) => ({
           drawerLabel: 'Loại món',
           title: 'Quản lý loại món',
           drawerIcon: ({ color, size }) => (
-            <MaterialIcons name="category" color={color} size={size} 
-            style={{ marginLeft: 11 }}
-            />
+            <MaterialIcons name="category" color={color} size={size} style={{ marginLeft: 11 }} />
           ),
           drawerLabelStyle: {
-            marginLeft: 4, // Tạo khoảng cách giữa icon và chữ trong Drawer
+            marginLeft: 4,
           },
-        }}
+          headerRight: () => (
+            (maquyen === 1 || maquyen === 2) && (
+              <FAB
+                icon="plus"
+                color="black"
+                style={{ right: 8, backgroundColor: '#ffe4b5' }}
+                onPress={() => navigation.navigate('LoaiMon', { openAddDialog: true })}
+              />
+            )
+          ),
+        })}
+        initialParams={{ maquyen }} // Thêm dòng này để truyền maquyen xuống
       />
+
       <Drawer.Screen
         name="Mon"
         component={MonScreen}
-        options={{
+        options={({ navigation }) => ({
           drawerLabel: 'Món',
           title: 'Quản lý món',
           drawerIcon: ({ color, size }) => (
-            <MaterialIcons name="restaurant-menu" color={color} size={size} 
-            style={{ marginLeft: 11 }}
-            />
+            <MaterialIcons name="restaurant-menu" color={color} size={size} style={{ marginLeft: 11 }} />
           ),
           drawerLabelStyle: {
             marginLeft: 4, // Tạo khoảng cách giữa icon và chữ trong Drawer
           },
-        }}
+          headerRight: () => (
+            <FAB
+              icon="plus"
+              color="black"
+              style={{
+                right: 8,
+                backgroundColor: '#ffe4b5',
+              }}
+              onPress={() => navigation.navigate('Mon', { openAddDialog: true })}
+            />
+          ),
+        })}
+        initialParams={{ maquyen }} // Thêm dòng này để truyền maquyen xuống
       />
       <Drawer.Screen
         name="Tables"
         component={TablesScreen}
-        options={{
+        options={({ navigation }) => ({
           drawerLabel: 'Bàn ăn',
           title: 'Quản lý bàn',
           drawerIcon: ({ color, size }) => (
-            <MaterialIcons name="table-restaurant" color={color} size={size} 
-            style={{ marginLeft: 11 }}
-            />
+            <MaterialIcons name="table-restaurant" color={color} size={size} style={{ marginLeft: 11 }} />
           ),
           drawerLabelStyle: {
             marginLeft: 4, // Tạo khoảng cách giữa icon và chữ trong Drawer
           },
-        }}
-      />
-      <Drawer.Screen
-        name="Users"
-        component={UsersScreen}
-        options={{
-          drawerLabel: 'Người dùng',
-          title: 'Quản lý người dùng',
-          drawerIcon: ({ color, size }) => (
-            <MaterialIcons name="people" color={color} size={size} 
-            style={{ marginLeft: 11 }}
+          headerRight: () => (
+            <FAB
+              icon="plus"
+              color="black"
+              style={{
+                right: 8,
+                backgroundColor: '#ffe4b5',
+              }}
+              onPress={() => navigation.navigate('Tables', { openAddDialog: true })}
             />
           ),
-          drawerLabelStyle: {
-            marginLeft: 4, // Tạo khoảng cách giữa icon và chữ trong Drawer
-          },
-        }}
+        })}
+        initialParams={{ maquyen }} // Thêm dòng này để truyền maquyen xuống
       />
+      {maquyen === 1 && (
+        <Drawer.Screen
+          name="Users"
+          component={UsersScreen}
+          options={{
+            drawerLabel: 'Người dùng',
+            title: 'Quản lý người dùng',
+            drawerIcon: ({ color, size }) => (
+              <MaterialIcons 
+                name="people" 
+                color={color} 
+                size={size} 
+                style={{ marginLeft: 11 }}
+              />
+            ),
+            drawerLabelStyle: { marginLeft: 4 },
+          }}
+          initialParams={{ maquyen }}
+        />
+      )}
       <Drawer.Screen
         name="ThongKe"
         component={ThongKeScreen}
@@ -186,6 +228,7 @@ const AppStack = () => {
             marginLeft: 4, // Tạo khoảng cách giữa icon và chữ trong Drawer
           },
         }}
+        initialParams={{ maquyen }} // Thêm dòng này để truyền maquyen xuống
       />
     </Drawer.Navigator>
   );

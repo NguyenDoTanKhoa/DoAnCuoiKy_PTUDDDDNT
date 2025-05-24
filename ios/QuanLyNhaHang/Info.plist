@@ -22,6 +22,13 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Cho phép ứng dụng truy cập thư viện ảnh</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Cho phép ứng dụng sử dụng camera</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Cho phép lưu ảnh vào thư viện</string>
+
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

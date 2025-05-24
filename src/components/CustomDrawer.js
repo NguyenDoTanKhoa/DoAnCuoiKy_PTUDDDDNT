@@ -11,23 +11,42 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { DrawerActions } from '@react-navigation/native'; // Đã thêm import
+import { DrawerActions } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
 
-const CustomDrawer = (props) => {
+const CustomDrawer = ({ userData, ...props }) => {
+  const handleLogout = async () => {
+  try {
+    // Đánh dấu là đăng xuất thủ công
+    await AsyncStorage.setItem('isManualLogout', 'true');
+    
+    // Đăng xuất Firebase
+    await auth().signOut();
+    await AsyncStorage.removeItem('rememberedCredentials');
+        // Đóng drawer và điều hướng
+    props.navigation.dispatch(DrawerActions.closeDrawer());
+    props.navigation.navigate('AuthStack');
+  } catch (error) {
+    console.error('Lỗi khi đăng xuất:', error);
+  }
+};
+
   return (
     <View style={{flex: 1}}>
-      <DrawerContentScrollView {...props}
-      contentContainerStyle={{ padding: 0 }}
-      style={{ padding: 0, margin: 0 }}>
+      <DrawerContentScrollView 
+        {...props}
+        contentContainerStyle={{ padding: 0 }}
+        style={{ padding: 0, margin: 0 }}
+      >
         {/* Header */}
-        
         <View>
           <Image
             source={require('../assets/images/logothemira.png')}
             style={{height: 175, width: 294, resizeMode: 'contain'}}
           />
           <Text style={{fontSize: 18, marginBottom: 5}}>
-            Xin chào, Khoa!
+            Xin chào, {userData?.username || 'người dùng'}!
           </Text>
           <Text style={{
             fontSize: 30,
@@ -38,47 +57,46 @@ const CustomDrawer = (props) => {
             The Mira Restaurant
           </Text>
         </View>
+
         <DrawerItem
-            label="Trang chính"
-            icon={({ size }) => (
-                <MaterialIcons
-                name="home"
-                size={size}
-                color={
-                    props.state.index === props.state.routeNames.indexOf('MainTabs')
-                    ? 'red' // màu icon khi được chọn
-                    : '#333' // màu mặc định
-                }
-                style={{ marginLeft: 10 }} // Đẩy icon sang phải một chút
-                />
-
-            )}
-            focused={props.state.index === props.state.routeNames.indexOf('MainTabs')}
-            onPress={() => {
-                props.navigation.navigate('MainTabs');
-            }}
-            style={{
-                marginHorizontal: -15,
-                borderRadius: 0,
-                backgroundColor:
+          label="Trang chính"
+          icon={({ size }) => (
+            <MaterialIcons
+              name="home"
+              size={size}
+              color={
                 props.state.index === props.state.routeNames.indexOf('MainTabs')
-                    ? '#FFA500' // nền khi được chọn
-                    : 'transparent',
-            }}
-            labelStyle={{
-                marginLeft: 3,
-                color:
-                props.state.index === props.state.routeNames.indexOf('MainTabs')
-                    ? 'red' // màu chữ khi được chọn
-                    : '#333', // màu chữ mặc định
-            }}
+                ? 'red'
+                : '#333'
+              }
+              style={{ marginLeft: 10 }}
             />
-
-
+          )}
+          focused={props.state.index === props.state.routeNames.indexOf('MainTabs')}
+          onPress={() => {
+            props.navigation.navigate('MainTabs');
+          }}
+          style={{
+            marginHorizontal: -15,
+            borderRadius: 0,
+            backgroundColor:
+              props.state.index === props.state.routeNames.indexOf('MainTabs')
+              ? '#FFA500'
+              : 'transparent',
+          }}
+          labelStyle={{
+            marginLeft: 3,
+            color:
+              props.state.index === props.state.routeNames.indexOf('MainTabs')
+              ? 'red'
+              : '#333',
+          }}
+        />
 
         <Text style={{ marginLeft: 9, marginBottom: 10, fontWeight: 'bold', color: 'gray', marginTop: 10 }}>
           Quản lý
         </Text>
+        
         <View style={{ paddingHorizontal: 0, marginHorizontal: -15 }}>
           <DrawerItemList 
             {...props}
@@ -100,10 +118,7 @@ const CustomDrawer = (props) => {
         <DrawerItem
           label="Đăng xuất"
           icon={({color, size}) => <MaterialIcons name="logout" size={size} color={color} />}
-          onPress={() => {
-            props.navigation.dispatch(DrawerActions.closeDrawer());
-            props.navigation.navigate('AuthStack');
-          }}
+          onPress={handleLogout}
           style={{
             marginHorizontal: -5,
             borderRadius: 0,
